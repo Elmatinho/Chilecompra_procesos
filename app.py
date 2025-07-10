@@ -20,7 +20,8 @@ if opcion == "Conversor BPMN a Texto":
         st.text_area("Resultado", texto, height=500)
         st.markdown("""
         ---
-        #### Instrucción para análisis con IA:
+        #### Instrucción para análisis con IA
+        ##### Copia y pega el siguiente script en cualquier GenAI para poder tener el resultado optimo de la descripción:
 
         Hola, te voy a cargar un archivo .txt que contiene información de un proceso BPMN representado en texto plano.
 
