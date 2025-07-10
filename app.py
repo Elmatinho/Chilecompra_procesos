@@ -18,6 +18,28 @@ if opcion == "Conversor BPMN a Texto":
         contenido = archivo_bpmn.read().decode("utf-8")
         texto = parse_bpmn_from_string(contenido)
         st.text_area("Resultado", texto, height=500)
+         st.markdown("""
+        ---
+        #### Instrucción para análisis con IA:
+
+        Hola, te voy a cargar un archivo .txt que contiene información de un proceso BPMN representado en texto plano.
+
+        Este archivo contiene roles o responsables definidos como Lane, las tareas como [task], [sendTask] o [receiveTask], y el flujo de trabajo como [sequenceFlow].
+
+        Necesito que me generes un relato extenso, claro y estructurado que describa el paso a paso del proceso, como si estuvieras explicándoselo a alguien que no conoce el funcionamiento interno.
+
+        Quiero que el resultado sea un texto narrativo, redactado en párrafos, explicando qué sucede en cada etapa del proceso, qué rol realiza qué actividad, y cómo avanza el flujo de un paso a otro.
+
+        En caso de que existan gateways, describe en el relato cuáles son las posibles decisiones que puede tomar el proceso y cómo cada camino afecta la continuidad.
+
+        El estilo de redacción debe ser similar a este ejemplo:
+
+        *“El proceso comienza cuando un proyecto o funcionalidad ha sido certificado en el ambiente de preproducción. Si esta funcionalidad tiene prioridad o corresponde a una necesidad urgente (como un P1)...”*
+
+        En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado.
+
+        Cuando te diga que el archivo fue subido, genera la descripción.
+        """)
         st.download_button("Descargar .txt", texto, file_name="resultado.txt")
 
 elif opcion == "Aplicar Plantilla a Excel/Word":
