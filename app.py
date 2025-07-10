@@ -18,7 +18,7 @@ if opcion == "Conversor BPMN a Texto":
         contenido = archivo_bpmn.read().decode("utf-8")
         texto = parse_bpmn_from_string(contenido)
         st.text_area("Resultado", texto, height=500)
-         st.markdown("""
+        st.markdown("""
         ---
         #### Instrucción para análisis con IA:
 
