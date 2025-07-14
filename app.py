@@ -49,7 +49,7 @@ elif opcion == "Aplicar Plantilla a Excel/Word":
 
     archivo = st.file_uploader("Carga archivo Excel o Word", type=["xlsx", "docx"])
     if archivo:
-        ruta_plantilla = os.path.join("plantilla", "Plantilla.docx")
+        ruta_plantilla = os.path.join("plantilla", "Plantilla Documentación Procesos.docx")
         resultado = transformar_archivo(archivo, ruta_plantilla)
 
         st.success("Archivo generado con éxito.")
