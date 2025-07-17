@@ -42,32 +42,7 @@ if opcion == "Conversor BPMN a Texto":
         Cuando te diga que el archivo fue subido, genera la descripción.
         """)
 
-        if "=== ESTADÍSTICAS DEL PROCESO ===" in texto:
-            tareas_data = []
-            gateways_data = []
-
-            for linea in texto.splitlines():
-                if "- " in linea and "tareas" in linea:
-                    partes = linea.replace("- ", "").replace(" tareas", "").replace("%", "").split("(")
-                    rol = partes[0].strip()
-                    cantidad = int(partes[1].strip().split()[0]) if len(partes) > 1 else 0
-                    porcentaje = float(partes[1].strip().split()[1]) if len(partes) > 1 else 0
-                    tareas_data.append({"Rol": rol, "Tareas": cantidad, "Porcentaje": porcentaje})
-                if "- " in linea and "gateways" in linea:
-                    partes = linea.replace("- ", "").replace(" gateways", "").replace("%", "").split("(")
-                    rol = partes[0].strip()
-                    cantidad = int(partes[1].strip().split()[0]) if len(partes) > 1 else 0
-                    porcentaje = float(partes[1].strip().split()[1]) if len(partes) > 1 else 0
-                    gateways_data.append({"Rol": rol, "Gateways": cantidad, "Porcentaje": porcentaje})
-
-            if tareas_data:
-                st.subheader("📊 Distribución de Tareas por Rol")
-                st.dataframe(pd.DataFrame(tareas_data))
-
-            if gateways_data:
-                st.subheader("🔁 Distribución de Gateways por Rol")
-                st.dataframe(pd.DataFrame(gateways_data))
-                
+       
         st.download_button("Descargar .txt", texto, file_name="resultado.txt")
 
 
