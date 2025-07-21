@@ -126,9 +126,17 @@ def procesar_excel(excel_file, plantilla_path):
     xls = pd.ExcelFile(excel_file)
     wb = load_workbook(excel_file)
 
+    st.info(f"Hojas detectadas en el Excel: {', '.join(xls.sheet_names)}")
+    
     for seccion, hoja in secciones.items():
         doc.add_heading(seccion, level=1)
+    
+        if hoja not in xls.sheet_names:
+            st.warning(f"La hoja '{hoja}' no existe en el archivo Excel. Se omitirá la sección '{seccion}'.")
+            continue
+    
         df = pd.read_excel(xls, sheet_name=hoja)
+
 
         if seccion == "II. Descripción de Actividades":
             col_e = df.iloc[:, 4].dropna()
