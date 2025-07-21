@@ -5,6 +5,7 @@ from io import BytesIO
 from docx.shared import Inches
 from openpyxl import load_workbook
 import os
+import streamlit as st
 
 def transformar_archivo(archivo_subido, plantilla_path):
     nombre = archivo_subido.name.lower()
