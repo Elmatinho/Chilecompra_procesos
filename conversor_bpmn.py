@@ -1,6 +1,6 @@
-import streamlit as st
 import xml.etree.ElementTree as ET
-import io
+from collections import defaultdict
+from io import StringIO
 
 # Namespaces BPMN estándar
 NS = {
@@ -25,9 +25,17 @@ def es_elemento_bpmn_relevante(tag):
     ]
 
 def parse_bpmn_from_string(bpmn_content):
+    """
+    Parsea un BPMN (XML como string) y devuelve:
+      - texto (str): salida legible con pools, procesos y flows + resumen estadístico
+      - stats (dict): estructuras listas para DataFrame (tareas/gateways por rol)
+
+    Ejemplo:
+        texto, stats = parse_bpmn_from_string(xml_text)
+        # stats["tareas_por_rol"] -> [{'rol': 'Analista', 'cantidad': 5, 'porcentaje': 41.7}, ...]
+    """
     root = ET.fromstring(bpmn_content)
 
-    # Pools
     pools = []
     for participant in root.findall('bpmn:collaboration/bpmn:participant', NS):
         pools.append(f"Pool: {participant.get('name', '(sin nombre)')} (Proceso: {participant.get('processRef')})")
@@ -38,19 +46,22 @@ def parse_bpmn_from_string(bpmn_content):
         bpmn_id = shape.get('bpmnElement')
         bounds = shape.find('dc:Bounds', NS)
         if bpmn_id and bounds is not None:
-            x = float(bounds.get('x'))
-            y = float(bounds.get('y'))
-            w = float(bounds.get('width'))
-            h = float(bounds.get('height'))
+            x = float(bounds.get('x')); y = float(bounds.get('y'))
+            w = float(bounds.get('width')); h = float(bounds.get('height'))
             shape_bounds[bpmn_id] = (x, y, w, h)
 
     procesos = []
+    total_tareas = 0
+    total_gateways = 0
+    conteo_por_lane = defaultdict(int)       # tareas por rol
+    gateways_por_lane = defaultdict(int)     # gateways por rol
+
     for process in root.findall('bpmn:process', NS):
         process_id = process.get('id')
         process_name = process.get('name', '(sin nombre)')
         lines = [f"\nProceso: {process_name} (ID: {process_id})"]
 
-        # Lanes y sus áreas
+        # Lanes
         lane_areas = {}
         lane_nombres = {}
         for lane in process.findall('bpmn:laneSet/bpmn:lane', NS):
@@ -61,16 +72,19 @@ def parse_bpmn_from_string(bpmn_content):
             if lane_id in shape_bounds:
                 lane_areas[lane_id] = shape_bounds[lane_id]
 
-        # Elementos y asignación por posición a lane
+        # Elementos → lane
         id_a_lane = {}
         elementos = {}
+
         for elem in process:
             tag = elem.tag.split('}')[-1]
             elem_id = elem.get('id')
             name = elem.get('name', '(sin nombre)')
             if not elem_id:
                 continue
+
             if es_elemento_bpmn_relevante(tag):
+                # Asignar lane por posición geométrica si hay shape
                 if elem_id in shape_bounds:
                     ex, ey, ew, eh = shape_bounds[elem_id]
                     cx, cy = ex + ew / 2, ey + eh / 2
@@ -78,14 +92,23 @@ def parse_bpmn_from_string(bpmn_content):
                         if punto_dentro_de_area(cx, cy, area):
                             id_a_lane[elem_id] = lid
                             break
+
                 lane_id = id_a_lane.get(elem_id, 'SinLane')
                 lane_nombre = lane_nombres.get(lane_id, 'Sin rol')
+
                 elementos[elem_id] = f"{tag}: {name}"
                 lines.append(f"  [{tag}] {name} (ID: {elem_id}, Rol: {lane_nombre})")
 
-        # Sequence flows con nombre del rol
+                # Contabilizar tareas/gateways
+                if tag.endswith("Task"):
+                    conteo_por_lane[lane_nombre] += 1
+                    total_tareas += 1
+                elif "Gateway" in tag:
+                    gateways_por_lane[lane_nombre] += 1
+                    total_gateways += 1
+
+        # Sequence flows
         for seq in process.findall('bpmn:sequenceFlow', NS):
-            flow_id = seq.get('id')
             source = seq.get('sourceRef')
             target = seq.get('targetRef')
             source_name = elementos.get(source, source)
@@ -98,29 +121,45 @@ def parse_bpmn_from_string(bpmn_content):
 
         procesos.append('\n'.join(lines))
 
-    output = ""
+    # ----- Construir texto legible -----
+    salida = StringIO()
     if pools:
-        output += "=== POOLS ===\n" + '\n'.join(pools) + "\n"
-    output += "\n=== PROCESOS ===\n" + '\n\n'.join(procesos)
-    return output
+        salida.write("=== POOLS ===\n" + '\n'.join(pools) + "\n")
+    salida.write("\n=== PROCESOS ===\n" + '\n\n'.join(procesos) + "\n")
 
-# Streamlit App
-st.title("Convertidor de BPMN a Texto")
+    salida.write("\n=== ESTADÍSTICAS DEL PROCESO ===\n")
+    salida.write(f"Total de tareas encontradas: {total_tareas}\n")
+    salida.write("Tareas por rol:\n")
+    for rol, cantidad in sorted(conteo_por_lane.items(), key=lambda x: x[1], reverse=True):
+        pct = (cantidad / total_tareas * 100) if total_tareas > 0 else 0.0
+        salida.write(f"- {rol}: {cantidad} tareas ({pct:.1f}%)\n")
 
-uploaded_file = st.file_uploader("Carga un archivo BPMN", type=["bpmn"])
+    salida.write(f"\nTotal de gateways encontrados: {total_gateways}\n")
+    salida.write("Gateways por rol:\n")
+    for rol, cantidad in sorted(gateways_por_lane.items(), key=lambda x: x[1], reverse=True):
+        pct = (cantidad / total_gateways * 100) if total_gateways > 0 else 0.0
+        salida.write(f"- {rol}: {cantidad} gateways ({pct:.1f}%)\n")
 
-if uploaded_file:
-    bpmn_bytes = uploaded_file.read()
-    try:
-        output_text = parse_bpmn_from_string(bpmn_bytes.decode("utf-8"))
-        st.success("✅ Conversión realizada correctamente.")
-        st.text_area("Resultado:", output_text, height=500)
+    texto = salida.getvalue()
 
-        st.download_button(
-            label="📥 Descargar .txt",
-            data=output_text,
-            file_name=uploaded_file.name.replace(".bpmn", ".txt"),
-            mime="text/plain"
-        )
-    except Exception as e:
-        st.error(f"❌ Error al procesar el archivo: {e}")
+    # ----- Estructuras para DataFrame -----
+    tareas_por_rol = []
+    for rol, cantidad in sorted(conteo_por_lane.items(), key=lambda x: x[1], reverse=True):
+        pct = (cantidad / total_tareas * 100) if total_tareas > 0 else 0.0
+        tareas_por_rol.append({"rol": rol, "cantidad": cantidad, "porcentaje": round(pct, 1)})
+
+    gateways_por_rol = []
+    for rol, cantidad in sorted(gateways_por_lane.items(), key=lambda x: x[1], reverse=True):
+        pct = (cantidad / total_gateways * 100) if total_gateways > 0 else 0.0
+        gateways_por_rol.append({"rol": rol, "cantidad": cantidad, "porcentaje": round(pct, 1)})
+
+    stats = {
+        "total_tareas": total_tareas,
+        "total_gateways": total_gateways,
+        "tareas_por_rol": tareas_por_rol,                 # lista de dicts → ideal para st.dataframe
+        "gateways_por_rol": gateways_por_rol,             # lista de dicts → ideal para st.dataframe
+        "tareas_por_rol_raw": dict(conteo_por_lane),      # dict crudo por si lo necesitas
+        "gateways_por_rol_raw": dict(gateways_por_lane)   # dict crudo por si lo necesitas
+    }
+
+    return texto, stats
