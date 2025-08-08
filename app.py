@@ -19,7 +19,22 @@ if opcion == "Conversor BPMN a Texto":
         contenido = archivo_bpmn.read().decode("utf-8")
 
         # ⬇️ NUEVO: la función ahora retorna (texto, stats)
-        texto, stats = parse_bpmn_from_string(contenido)
+        # Llama a la función
+        res = parse_bpmn_from_string(contenido)
+        
+        # Soporta versiones antiguas (solo texto) y nuevas (texto, stats)
+        if isinstance(res, tuple) and len(res) == 2:
+            texto, stats = res
+        else:
+            texto = res
+            stats = {
+                "total_tareas": 0,
+                "total_gateways": 0,
+                "tareas_por_rol": [],
+                "gateways_por_rol": [],
+                "tareas_por_rol_raw": {},
+                "gateways_por_rol_raw": {},
+            }
 
         # Texto completo (POOLS/PROCESOS/SECUENCIAS + estadísticas en texto)
         st.text_area("Resultado", texto, height=500)
