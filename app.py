@@ -79,35 +79,7 @@ if opcion == "Conversor BPMN a Texto":
             st.markdown("**Distribución de tareas por rol (Lane)**")
             df_tareas = pd.DataFrame(stats["tareas_por_rol"])  # columnas: rol, cantidad, porcentaje
             st.dataframe(df_tareas, use_container_width=True)
-            if not df_tareas.empty:
-                df_tareas_sorted = df_tareas.sort_values("cantidad", ascending=False).reset_index(drop=True)
-                src_t = ColumnDataSource({
-                    "rol": df_tareas_sorted["rol"].astype(str).tolist(),
-                    "cantidad": df_tareas_sorted["cantidad"].astype(int).tolist(),
-                    "porcentaje": df_tareas_sorted["porcentaje"].astype(float).tolist(),
-                })
-            
-                p_t = figure(
-                    x_range=src_t.data["rol"],
-                    height=350,
-                    title="Tareas por Rol (Lane)",
-                    toolbar_location=None
-                )
-                p_t.vbar(x="rol", top="cantidad", width=0.6, source=src_t)
-            
-                # Hover con detalles
-                p_t.add_tools(HoverTool(tooltips=[
-                    ("Rol", "@rol"),
-                    ("Tareas", "@cantidad"),
-                    ("% sobre total", "@porcentaje{0.0}%"),
-                ]))
-            
-                p_t.xaxis.major_label_orientation = 0.9
-                p_t.yaxis.axis_label = "Cantidad de tareas"
-            
-                st.bokeh_chart(p_t, use_container_width=True)
-         
-
+           
         if stats.get("gateways_por_rol"):
             st.markdown("**Distribución de gateways por rol (Lane)**")
             df_gateways = pd.DataFrame(stats["gateways_por_rol"])  # columnas: rol, cantidad, porcentaje
