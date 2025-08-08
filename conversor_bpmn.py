@@ -100,8 +100,8 @@ def parse_bpmn_from_string(bpmn_content):
                 lines.append(f"  [{tag}] {name} (ID: {elem_id}, Rol: {lane_nombre})")
 
                 # Contabilizar tareas/gateways
-                if tag.endswith(['task', 'userTask', 'manualTask', 'serviceTask', 'receiveTask',
-        'sendTask', 'scriptTask', 'businessRuleTask']):
+                if tag in ['task', 'userTask', 'manualTask', 'serviceTask', 'receiveTask',
+        'sendTask', 'scriptTask', 'businessRuleTask']:
                     conteo_por_lane[lane_nombre] += 1
                     total_tareas += 1
                 elif "Gateway" in tag:
