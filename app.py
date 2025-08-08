@@ -37,9 +37,10 @@ if opcion == "Conversor BPMN a Texto":
 
         *“El proceso comienza cuando un proyecto o funcionalidad ha sido certificado en el ambiente de preproducción. Si esta funcionalidad tiene prioridad o corresponde a una necesidad urgente (como un P1)...”*
 
-        En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado.
+        En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado. Además entregame el objetivo y alcance de este proceso a nivel general.
 
         Cuando te diga que el archivo fue subido, genera la descripción.
+
         """)
 
        
