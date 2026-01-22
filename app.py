@@ -62,6 +62,8 @@ if opcion == "Conversor BPMN a Texto":
 
         En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado.
 
+        Luego quiero que me entregues un listado con las etapas principales del proceso, con el objetivo de cada una. Además de ello el incluir en que puntos se relaciona con la norma ISO 9001
+
         Cuando te diga que el archivo fue subido, genera la descripción.
         """)
 
