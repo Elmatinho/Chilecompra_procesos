@@ -46,23 +46,15 @@ if opcion == "Conversor BPMN a Texto":
         ---
         #### Instrucción para análisis con IA (posterior al texto generado):
 
-        Hola, te voy a cargar un archivo .txt que contiene información de un proceso BPMN representado en texto plano.
+Hola, te voy a cargar un archivo .txt que contiene información de un proceso BPMN representado en texto plano. Este archivo contiene roles o responsables definidos como Lane, las tareas como [task], [sendTask] o [receiveTask], y el flujo de trabajo como [sequenceFlow].
 
-        Este archivo contiene roles o responsables definidos como Lane, las tareas como [task], [sendTask] o [receiveTask], y el flujo de trabajo como [sequenceFlow].
+De esto, necesito que realices un análisis de lo que se realiza en el proceso y luego de ello separes el proceso por etapas. Posterior a eso necesito que me entregues un listado de las etapas generadas. 
 
-        Necesito que me generes un relato extenso, claro y estructurado que describa el paso a paso del proceso, como si estuvieras explicándoselo a alguien que no conoce el funcionamiento interno.
+Después de eso, por cada etapa necesito que me entregues las entradas, salidas y el objetivo de la etapa, posteriormente quiero que me elabores un relato extenso, claro y estructurado que describa el paso a paso de las actividades dentro de la etapa, como si estuvieras explicándoselo a alguien que no conoce el funcionamiento interno. Quiero que el resultado sea un texto narrativo, redactado en párrafos, explicando qué sucede, qué rol realiza qué actividad, y cómo avanza el flujo de un paso a otro. En caso de que existan gateways, describe en el relato cuáles son las posibles decisiones que puede tomar el proceso y cómo cada camino afecta la continuidad. El estilo de redacción debe ser similar a este ejemplo: “El proceso comienza cuando un proyecto o funcionalidad ha sido certificado en el ambiente de preproducción. Si esta funcionalidad tiene prioridad o corresponde a una necesidad urgente (como un P1)...” 
 
-        Quiero que el resultado sea un texto narrativo, redactado en párrafos, explicando qué sucede en cada etapa del proceso, qué rol realiza qué actividad, y cómo avanza el flujo de un paso a otro.
+Y al final, necesito que me entregues para la totalidad del proceso, los criterios de aceptación del proceso, 3 propuestas de indicadores, que información debería quedar como registro y su relación con la norma ISO 9001
 
-        En caso de que existan gateways, describe en el relato cuáles son las posibles decisiones que puede tomar el proceso y cómo cada camino afecta la continuidad.
-
-        El estilo de redacción debe ser similar a este ejemplo:
-
-        *“El proceso comienza cuando un proyecto o funcionalidad ha sido certificado en el ambiente de preproducción. Si esta funcionalidad tiene prioridad o corresponde a una necesidad urgente (como un P1)...”*
-
-        En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado.
-
-        Luego quiero que me entregues un listado con las etapas principales del proceso, con el objetivo de cada una. Además de ello el incluir en que puntos se relaciona con la norma ISO 9001
+En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado. Luego quiero que me entregues un listado con las etapas principales del proceso, con el objetivo de cada una.
 
         Cuando te diga que el archivo fue subido, genera la descripción.
         """)
