@@ -222,8 +222,14 @@ elif opcion == "Generar Word desde JSON":
 
     elif entrada == "Cargar archivo JSON":
         archivo_json = st.file_uploader("Carga archivo JSON", type=["json"])
+        
+        nombre_salida = "documento_proceso"
+        
         if archivo_json:
             json_texto = archivo_json.read().decode("utf-8")
+        
+            # Obtener nombre sin extensión
+            nombre_salida = os.path.splitext(archivo_json.name)[0]
 
     if json_texto:
         if st.button("Generar documento Word"):
@@ -240,7 +246,7 @@ elif opcion == "Generar Word desde JSON":
                 st.download_button(
                     label="Descargar Word",
                     data=resultado_word,
-                    file_name="resultado.docx",
+                    file_name=f"{nombre_salida}.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
         
