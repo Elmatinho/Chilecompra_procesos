@@ -1,6 +1,7 @@
 import streamlit as st
 from conversor_bpmn import parse_bpmn_from_string
 from transformador_word import transformar_archivo
+from generador_word_json import generar_word_desde_json
 import io
 import os
 from bokeh.plotting import figure
@@ -10,8 +11,14 @@ st.set_page_config(page_title="Procesador BPMN / Word", layout="wide")
 
 st.title("Herramienta de Procesamiento")
 
-opcion = st.sidebar.selectbox("Selecciona una funcionalidad", ["Conversor BPMN a Texto", "Aplicar Plantilla a Excel/Word"])
-
+opcion = st.sidebar.selectbox(
+    "Selecciona una funcionalidad",
+    [
+        "Conversor BPMN a Texto",
+        "Aplicar Plantilla a Excel/Word",
+        "Generar Word desde JSON"
+    ]
+)
 # --- Conversor BPMN a Texto ---
 if opcion == "Conversor BPMN a Texto":
     st.header("Conversión de archivo BPMN a texto")
@@ -101,5 +108,54 @@ elif opcion == "Aplicar Plantilla a Excel/Word":
         ruta_plantilla = os.path.join("plantilla", "Plantilla Documentación Procesos.docx")
         resultado = transformar_archivo(archivo, ruta_plantilla)
 
+
+elif opcion == "Generar Word desde JSON":
+    st.header("Generar Word desde JSON estructurado")
+
+    st.markdown("""
+    Pega el JSON generado por la IA o carga un archivo `.json`.
+    La aplicación lo aplicará sobre la plantilla Word definida.
+    """)
+
+    entrada = st.radio(
+        "Selecciona la forma de ingreso del JSON",
+        ["Pegar JSON", "Cargar archivo JSON"]
+    )
+
+    json_texto = None
+
+    if entrada == "Pegar JSON":
+        json_texto = st.text_area(
+            "Pega aquí el JSON",
+            height=400,
+            placeholder='{"nombre_proceso": "...", "objetivo": "...", "etapas": [...]}'
+        )
+
+    elif entrada == "Cargar archivo JSON":
+        archivo_json = st.file_uploader("Carga archivo JSON", type=["json"])
+        if archivo_json:
+            json_texto = archivo_json.read().decode("utf-8")
+
+    if json_texto:
+        if st.button("Generar documento Word"):
+            try:
+                ruta_plantilla = os.path.join("plantilla", "plantilla_ia.docx")
+
+                resultado_word = generar_word_desde_json(
+                    json_input=json_texto,
+                    ruta_plantilla=ruta_plantilla
+                )
+
+                st.success("Documento Word generado correctamente.")
+
+                st.download_button(
+                    label="Descargar Word generado",
+                    data=resultado_word,
+                    file_name="documento_proceso_generado.docx",
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
+
+            except Exception as e:
+                st.error(f"Error al generar el documento: {e}")
         st.success("Archivo generado con éxito.")
         st.download_button("Descargar Word", resultado, file_name="resultado.docx")
