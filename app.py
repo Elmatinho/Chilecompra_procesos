@@ -229,22 +229,22 @@ elif opcion == "Generar Word desde JSON":
         if st.button("Generar documento Word"):
             try:
                 ruta_plantilla = os.path.join("plantilla", "plantilla_ia.docx")
-
+        
                 resultado_word = generar_word_desde_json(
                     json_input=json_texto,
                     ruta_plantilla=ruta_plantilla
                 )
-
+        
                 st.success("Documento Word generado correctamente.")
-
+        
                 st.download_button(
-                    label="Descargar Word generado",
+                    label="Descargar Word",
                     data=resultado_word,
-                    file_name="documento_proceso_generado.docx",
+                    file_name="resultado.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
-
+        
             except Exception as e:
                 st.error(f"Error al generar el documento: {e}")
-        st.success("Archivo generado con éxito.")
-        st.download_button("Descargar Word", resultado_word, file_name="resultado.docx")
+            st.success("Archivo generado con éxito.")
+            st.download_button("Descargar Word", resultado, file_name="resultado.docx")
