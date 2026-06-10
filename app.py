@@ -246,5 +246,3 @@ elif opcion == "Generar Word desde JSON":
         
             except Exception as e:
                 st.error(f"Error al generar el documento: {e}")
-            st.success("Archivo generado con éxito.")
-            st.download_button("Descargar Word", resultado, file_name="resultado.docx")
