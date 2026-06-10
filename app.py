@@ -51,7 +51,7 @@ if opcion == "Conversor BPMN a Texto":
         # Instrucción para análisis con IA (como tenías antes)
         st.markdown("""
         ---
-        #### Instrucción para análisis con IA (posterior al texto generado):
+        #### 1) Instrucción para análisis con IA (posterior al texto generado):
 
 Hola, te voy a cargar un archivo .txt que contiene información de un proceso BPMN representado en texto plano. Este archivo contiene roles o responsables definidos como Lane, las tareas como [task], [sendTask] o [receiveTask], y el flujo de trabajo como [sequenceFlow].
 
@@ -64,6 +64,95 @@ Y al final, necesito que me entregues para la totalidad del proceso, los criteri
 En resumen: analiza las tareas, cruza los LaneID con los roles, interpreta el flujo secuencial, y conviértelo en un texto fluido, comprensible y detallado. Luego quiero que me entregues un listado con las etapas principales del proceso, con el objetivo de cada una.
 
         Cuando te diga que el archivo fue subido, genera la descripción.
+
+
+        2) Para generar JSON, el siguiente prompt:
+        Hola, te voy a cargar un archivo `.txt` que contiene información de un proceso BPMN representado en texto plano.
+
+Este archivo contiene roles o responsables definidos como `Lane`, tareas como `[task]`, `[userTask]`, `[sendTask]`, `[receiveTask]`, gateways como `[exclusiveGateway]`, `[parallelGateway]`, `[inclusiveGateway]`, y flujos de trabajo como `[sequenceFlow]`.
+
+Necesito que analices el proceso completo, cruces los LaneID con los roles, interpretes las tareas, gateways y flujos secuenciales, y generes una estructura JSON válida para ser utilizada posteriormente en una plantilla Word.
+
+El resultado debe ser exclusivamente un JSON válido. No incluyas explicaciones antes ni después del JSON. No uses markdown. No uses bloques de código. No incluyas comentarios.
+
+El JSON debe tener exactamente la siguiente estructura:
+
+{
+"nombre_proceso": "",
+"objetivo": "",
+"alcance": "",
+"descripcion_general": "",
+"roles": [],
+"etapas": [
+{
+"nombre": "",
+"objetivo": "",
+"entrada": "",
+"salida": "",
+"descripcion_narrativa": "",
+"roles_participantes": [],
+"riesgos": [],
+"criterios_aceptacion": []
+}
+],
+"criterios_aceptacion": [],
+"indicadores": [
+{
+"nombre": "",
+"descripcion": "",
+"formula": "",
+"frecuencia": "",
+"responsable": ""
+}
+],
+"registros": [],
+"relacion_iso_9001": [
+{
+"clausula": "",
+"relacion": ""
+}
+]
+}
+
+Instrucciones específicas:
+
+1. Identifica el nombre del proceso a partir del contenido del archivo. Si no existe un nombre explícito, propón uno coherente según las actividades descritas.
+
+2. Redacta un objetivo general del proceso, claro y formal, orientado a gestión de procesos.
+
+3. Redacta un alcance del proceso, indicando desde qué evento o actividad comienza y hasta qué punto termina.
+
+4. En `descripcion_general`, redacta un relato extenso, claro y estructurado del proceso completo. Debe estar escrito en prosa, en párrafos, explicando cómo inicia el proceso, cómo avanza, qué roles intervienen y cómo se conectan las actividades principales.
+
+5. Divide el proceso en etapas principales. Cada etapa debe agrupar actividades relacionadas de forma lógica. No generes etapas demasiado pequeñas; deben representar fases relevantes del proceso.
+
+6. Para cada etapa, completa:
+
+   * `nombre`: nombre claro de la etapa.
+   * `objetivo`: propósito específico de la etapa.
+   * `entrada`: insumo, evento o condición que permite iniciar la etapa.
+   * `salida`: resultado, producto o condición que deja la etapa para continuar.
+   * `descripcion_narrativa`: relato extenso y descriptivo, en prosa, explicando el paso a paso de las actividades de la etapa. Debe indicar qué rol realiza cada actividad, cómo avanza el flujo y qué ocurre cuando existen gateways o decisiones.
+   * `roles_participantes`: listado de roles que intervienen en la etapa.
+   * `riesgos`: riesgos asociados a la etapa.
+   * `criterios_aceptacion`: criterios que permiten validar que la etapa fue correctamente ejecutada.
+
+7. Si existen gateways, interpreta las decisiones posibles y describe en la narrativa cómo cada camino afecta la continuidad del proceso.
+
+8. En `criterios_aceptacion`, entrega criterios generales de aceptación para la totalidad del proceso.
+
+9. En `indicadores`, entrega 3 propuestas de indicadores de desempeño. Cada indicador debe incluir nombre, descripción, fórmula, frecuencia y responsable.
+
+10. En `registros`, indica qué información documentada debería conservarse como evidencia del proceso.
+
+11. En `relacion_iso_9001`, vincula el proceso con cláusulas relevantes de ISO 9001:2015, indicando la cláusula y una breve explicación de la relación. Considera, cuando corresponda, cláusulas como 4.4, 5.3, 6.1, 7.5, 8.1, 8.5, 9.1 y 10.2.
+
+12. El estilo de redacción debe ser formal, técnico y narrativo, similar a este ejemplo:
+
+“El proceso comienza cuando un proyecto o funcionalidad ha sido certificado en el ambiente de preproducción. Si esta funcionalidad tiene prioridad o corresponde a una necesidad urgente, el flujo avanza hacia una evaluación diferenciada que permite determinar si corresponde activar un tratamiento especial. Posteriormente, el rol responsable revisa los antecedentes disponibles, coordina las acciones necesarias y registra la información que permitirá asegurar la trazabilidad del proceso.”
+
+Cuando te indique que el archivo fue subido, genera exclusivamente el JSON solicitado.
+
         """)
 
         # ⬇️ NUEVO: Tablas con estadísticas estructuradas (sin parsear texto)
