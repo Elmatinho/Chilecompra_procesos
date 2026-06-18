@@ -1,1 +1,6 @@
 streamlit
+python-docx
+pandas
+openpyxl
+bokeh>=3.3
+docxtpl
